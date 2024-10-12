@@ -1,3 +1,24 @@
+// Listen for the sync event
+// self.addEventListener('sync', function(event) {
+//   if (event.tag === 'mySyncTag') {
+//     event.waitUntil(syncData());  // A function to handle syncing data
+//   }
+// });
+
+// async function syncData() {
+//   // Example: Send stored data to the server
+//   return fetch('/sync', {
+//     method: 'POST',
+//     body: JSON.stringify({data: 'example data'}),
+//     headers: {
+//       'Content-Type': 'application/json'
+//     }
+//   })
+//   .then(response => response.json())
+//   .then(data => console.log('Data synced:', data))
+//   .catch(err => console.error('Error syncing data:', err));
+// }
+
 const CACHE_NAME = 'my-pwa-cache-v1';
 const urlsToCache = [
   './',
