@@ -48,3 +48,28 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
+
+
+// Listen for Push events
+self.addEventListener('push', function(event) {
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || 'Notification Title';
+  const options = {
+    body: data.body || 'Default body',
+    icon: './images/icon-192x192.png',
+    badge: './images/icon-512x512.png'
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+// Handle notification click event
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow('https://yusuf0786.github.io/pwa')
+  );
+});

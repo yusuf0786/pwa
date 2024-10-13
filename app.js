@@ -52,3 +52,62 @@ window.addEventListener('beforeinstallprompt', (e) => {
     });
   });
 });
+
+
+
+// Function to request notification permission
+async function askPermission() {
+  return new Promise((resolve, reject) => {
+    const permissionResult = Notification.requestPermission(result => {
+      resolve(result);
+    });
+
+    if (permissionResult) {
+      permissionResult.then(resolve, reject);
+    }
+  }).then(permissionResult => {
+    if (permissionResult !== 'granted') {
+      throw new Error('Permission not granted for notifications');
+    }
+  });
+}
+
+// Function to subscribe the user to push notifications
+function subscribeUserToPush() {
+  navigator.serviceWorker.ready.then(function(registration) {
+    const subscribeOptions = {
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array('BMiUxKsLKyJJqoF-hubIjtDOUc2kFo_v-Lap9QpRmyD4axHUu_2dXMQbVSICVSvyMyk3eGtW4_ubBVby3_fCkho')  // Replace with your VAPID public key
+    };
+
+    return registration.pushManager.subscribe(subscribeOptions);
+  })
+  .then(function(pushSubscription) {
+    console.log('Received PushSubscription:', JSON.stringify(pushSubscription));
+
+    // You need to send this subscription object to your server to store
+    sendSubscriptionToServer(pushSubscription);
+  });
+}
+
+// Convert VAPID key from base64
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+
+  return outputArray;
+}
+
+// Call the functions
+askPermission().then(() => {
+  subscribeUserToPush();
+});
